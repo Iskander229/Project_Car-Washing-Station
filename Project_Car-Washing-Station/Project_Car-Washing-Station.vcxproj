@@ -19,20 +19,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\420J13_IskanderTaniyev\CarWashingStation\Admin.cpp" />
-    <ClCompile Include="..\..\420J13_IskanderTaniyev\CarWashingStation\Booking.cpp" />
-    <ClCompile Include="..\..\420J13_IskanderTaniyev\CarWashingStation\Main.cpp" />
-    <ClCompile Include="..\..\420J13_IskanderTaniyev\CarWashingStation\Service.cpp" />
-    <ClCompile Include="..\..\420J13_IskanderTaniyev\CarWashingStation\User.cpp" />
+    <ClCompile Include="Admin.cpp" />
+    <ClCompile Include="Booking.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Service.cpp" />
+    <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\420J13_IskanderTaniyev\CarWashingStation\Admin.h" />
-    <ClInclude Include="..\..\420J13_IskanderTaniyev\CarWashingStation\Booking.h" />
-    <ClInclude Include="..\..\420J13_IskanderTaniyev\CarWashingStation\BST.h" />
-    <ClInclude Include="..\..\420J13_IskanderTaniyev\CarWashingStation\CarWashStation.h" />
-    <ClInclude Include="..\..\420J13_IskanderTaniyev\CarWashingStation\Queue.h" />
-    <ClInclude Include="..\..\420J13_IskanderTaniyev\CarWashingStation\Service.h" />
-    <ClInclude Include="..\..\420J13_IskanderTaniyev\CarWashingStation\User.h" />
+    <ClInclude Include="Admin.h" />
+    <ClInclude Include="Booking.h" />
+    <ClInclude Include="BST.h" />
+    <ClInclude Include="CarWashStation.h" />
+    <ClInclude Include="Queue.h" />
+    <ClInclude Include="Service.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
