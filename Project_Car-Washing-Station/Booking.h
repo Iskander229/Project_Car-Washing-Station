@@ -5,14 +5,16 @@
 
 class Booking {
 private:
-    std::string bookingID;
     std::string userID;
-    std::string serviceID;
+    std::string bookingID;
 
 public:
-    Booking(const std::string& id, const std::string& userId, const std::string& serviceId);
+    //constr
+    Booking(const std::string& userId, const std::string& serviceId);
+    //getters    
+    std::string getUserID() const;
     std::string getBookingID() const;
-    std::string getServiceID() const;
 };
+
 
 #endif

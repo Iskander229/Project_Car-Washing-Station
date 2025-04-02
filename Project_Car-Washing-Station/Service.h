@@ -9,19 +9,19 @@ private:
     std::string serviceName;
     double price;
     int duration;
-
 public:
+    //constr
     Service(const std::string& id, const std::string& name, double price, int duration);
 
-    // Overload comparison operators
+    //overload comparison opers
     bool operator<(const Service& other) const;
     bool operator>(const Service& other) const;
     bool operator==(const Service& other) const;
 
-    // Getter methods
+    //getters
     std::string getServiceDetails() const;
     std::string getServiceID() const;
-    double getPrice() const; // Add this method
+    double getPrice() const;
 };
 
 #endif

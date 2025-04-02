@@ -1,24 +1,29 @@
 #include "Admin.h"
-#include "CarWashStation.h" 
-#include "Service.h"        
+#include "CarWashStation.h"
+#include "Service.h"
 #include <iostream>
 
-const std::string Admin::ADMIN_PASSWORD = "admin123"; // Fixed password
+const std::string Admin::ADMIN_DEFAULT_PASSWORD = "admin123";
 
+//constr
 Admin::Admin(const std::string& id, const std::string& name)
-    : adminID(id), name(name) {}
+    : Account(id, name, ADMIN_DEFAULT_PASSWORD) {}
 
-bool Admin::login(const std::string& password) const {
-    if (password == ADMIN_PASSWORD) {
+//logins
+bool Admin::login(const std::string& inputPassword) const {
+    if (Account::login(inputPassword)) {
         std::cout << "Admin " << name << " logged in." << std::endl;
         return true;
     }
-    else {
-        std::cout << "Invalid password!" << std::endl;
-        return false;
-    }
+    std::cout << "Invalid password!" << std::endl;
+    return false;
+}
+void Admin::displayInfo() const {
+    std::cout << "Admin ID: " << accountID << "\nName: " << name << std::endl;
 }
 
+
+//SERVICES
 void Admin::addService(CarWashStation<Service>& carWash) {
     std::string serviceID, serviceName;
     double price;
@@ -39,13 +44,11 @@ void Admin::addService(CarWashStation<Service>& carWash) {
 }
 
 void Admin::removeService(CarWashStation<Service>& carWash) {
-    carWash.displayAllServices(); // Display all services
-
+    carWash.displayAllServices();
     std::string serviceID;
     std::cout << "Enter the service ID you want to remove: ";
     std::cin >> serviceID;
-
-    carWash.removeService(serviceID); // Pass the serviceID directly
+    carWash.removeService(serviceID);
 }
 
 void Admin::viewSalesReport(const CarWashStation<Service>& carWash) const {
