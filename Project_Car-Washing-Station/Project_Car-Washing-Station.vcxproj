@@ -22,9 +22,13 @@
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="Admin.cpp" />
     <ClCompile Include="Booking.cpp" />
+    <ClCompile Include="CarWashStation.cpp" />
+    <ClCompile Include="ChoiceForm.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="OptionTree.cpp" />
     <ClCompile Include="Service.cpp" />
     <ClCompile Include="User.cpp" />
+    <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
@@ -32,9 +36,12 @@
     <ClInclude Include="Booking.h" />
     <ClInclude Include="BST.h" />
     <ClInclude Include="CarWashStation.h" />
+    <ClInclude Include="ChoiceForm.h" />
+    <ClInclude Include="OptionTree.h" />
     <ClInclude Include="Queue.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="User.h" />
+    <ClInclude Include="Util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

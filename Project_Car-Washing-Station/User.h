@@ -6,21 +6,16 @@
 #include <vector>
 #include "Service.h"
 
-template <typename T> //just a forward declaration
-class CarWashStation;
-
 class User : public Account {
-private:
-    std::vector<Booking> bookingHistory;
 
 public:
     User(const std::string& id, const std::string& name, const std::string& password);
-    void registerUser();
+
+
     void displayInfo() const override;
-    void viewServices(const CarWashStation<Service>& carWash) const;
-    void bookService(CarWashStation<Service>& carWash);
-    void viewBookingHistory() const;
-    void addBooking(const Booking& booking);
+
+    virtual bool fromLine(std::string line) override;
+    virtual bool toLine(std::string& line) override;
 };
 
 #endif
