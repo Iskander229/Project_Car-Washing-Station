@@ -5,7 +5,7 @@ Service::Service(const std::string& id, const std::string& name, double price, i
     : serviceID(id), serviceName(name), price(price), duration(duration) {}
 
 
-//Overload of < operator
+//Overload < operator
 bool Service::operator<(const Service& other) const {
     return serviceID < other.serviceID; //Compare based on serviceID
 }

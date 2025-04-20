@@ -5,7 +5,7 @@
 class Util
 {
 public:
-
+	//Reads a substring from buf until a comma is encountered
 	static bool readUntillComma(std::string& buf, std::string& result) {
 		result = "";
 		for (int i = 0; i < buf.size(); i++) {
@@ -15,13 +15,17 @@ public:
 				return true;
 			}
 		}
-		return false;
+		return false; //if no comma found
 	}
 
+
+	//Adds a string to buf followed by a comma
 	static void writeWithComma(std::string& buf, std::string& append) {
 		buf = buf + (append + ",");
 	}
 
+
+	//Serializes a vector of strings into buf
 	static void writeManyWithComma(std::string& buf, std::vector<std::string>& append) {
 		size_t size = append.size();
 		std::string sizeStr = std::to_string(size);
@@ -31,6 +35,8 @@ public:
 		}
 	}
 
+
+	//Deserializes a vector of strings from buf.
 	static bool readManyUntilComma(std::string& buf, std::vector<std::string>& result) {
 		std::string sizeStr;
 		if (!readUntillComma(buf, sizeStr)) {
@@ -47,8 +53,9 @@ public:
 		return true;
 	}
 
-	static bool containsIgnoreCase(const std::string& str, const std::string& substr) {
 
+	//Checks if substr exists in str(case-insensitive).
+	static bool containsIgnoreCase(const std::string& str, const std::string& substr) {
 		if (substr.size() > str.size()) {
 			return false;
 		}
