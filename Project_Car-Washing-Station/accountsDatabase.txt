@@ -1,3 +1,2 @@
 Alex0,Alex,Alex,admin,
 Aleks0,Aleks,aaaa,user,
-iskander0,iskander,esken,user,
