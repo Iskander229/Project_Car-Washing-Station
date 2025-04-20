@@ -17,6 +17,7 @@ private:
     
     OptionTree serviceOptions;
 
+    //fast-searching
     std::unordered_map<std::string, Account*> accountsById;
     std::unordered_map<std::string, Account*> accountsByName;
 
