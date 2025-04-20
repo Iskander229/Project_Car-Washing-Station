@@ -12,10 +12,6 @@ bool Account::MatchPassword(const std::string& inputPassword) const
 {
     return inputPassword == password;
 }
-void Account::changePassword(const std::string& newPassword) {
-    password = newPassword;
-    std::cout << "Password changed successfully!" << std::endl;
-}
 
 //getters
 std::string Account::GetAccountId() const {
@@ -28,7 +24,7 @@ std::string Account::GetName() const {
 bool Account::IsValidUsername(std::string& username, std::string& errorMessage)
 {
     static const char* usernameAllowedSymbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-";
-    static const int usernameAllowedSymbolsNum = strlen(usernameAllowedSymbols);
+    static const size_t usernameAllowedSymbolsNum = strlen(usernameAllowedSymbols);
     if (username.size() < 4) {
         errorMessage = "Username too short.";
         return false;
@@ -59,7 +55,7 @@ bool Account::IsValidUsername(std::string& username, std::string& errorMessage)
 bool Account::IsValidPassword(std::string& password, std::string& errorMessage)
 {
     static const char* passwordAllowedSymbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-";
-    static const int passwordAllowedSymbolsNum = strlen(passwordAllowedSymbols);
+    static const size_t passwordAllowedSymbolsNum = strlen(passwordAllowedSymbols);
     if (password.size() < 4) {
         errorMessage = "Password too short.";
         return false;
