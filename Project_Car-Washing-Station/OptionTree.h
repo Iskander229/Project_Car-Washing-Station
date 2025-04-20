@@ -1,11 +1,13 @@
 #pragma once
 
 #include<iostream>
+#include "Util.h"
 #include<vector>
 
 struct OptionTreeNode {
 public:
 	std::string content;
+	float price = 0;
 	std::vector< OptionTreeNode*> children;
 
 	OptionTreeNode() : content() {
@@ -22,6 +24,7 @@ public:
 	}
 
 };
+
 
 
 class OptionTree
@@ -139,7 +142,7 @@ public:
 			// Error: function should not work without path
 			return;
 		}
-		if (pathOfCurrent[pathOfCurrent.size() - 1].find(query) != std::string::npos) {
+		if (Util::containsIgnoreCase(pathOfCurrent[pathOfCurrent.size() - 1], query)) {
 			results.push_back(pathOfCurrent);
 			FindAllExclusive(results, pathOfCurrent, current);
 			return;

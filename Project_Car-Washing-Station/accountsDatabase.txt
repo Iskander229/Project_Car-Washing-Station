@@ -1,2 +1,2 @@
 Alex0,Alex,Alex,admin,
-Aleks0,Aleks,aaaa,user,
+user0,user,user,user,0,

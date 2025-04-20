@@ -75,7 +75,7 @@ void registerDialogue(Account*& account, CarWashStation* carWash, bool setupMode
 	}
 }
 
-bool findService(Account*& account, CarWashStation* carWash, std::vector<std::string>& foundService) {
+bool findService(Account*& account, CarWashStation* carWash, std::vector<std::string>& foundService, bool ignoreRoot) {
 	std::cout << "Find service:" << std::endl;
 	std::cout << "    Enter service name: ";
 	std::string findName;
@@ -84,7 +84,7 @@ bool findService(Account*& account, CarWashStation* carWash, std::vector<std::st
 	std::vector<std::vector<std::string>> services;
 	carWash->FindServiceOptions(findName, services);
 
-	if (services.size() == 0) {
+	if (services.size() == 0 || services.size() == 1 && ignoreRoot) {
 		std::cout << "No services found." << std::endl;
 		return false;
 	}
@@ -94,6 +94,9 @@ bool findService(Account*& account, CarWashStation* carWash, std::vector<std::st
 
 		ChoiceForm choices = ChoiceForm("Found " + std::to_string(services.size()) + " services:");
 		for (std::vector<std::string>& path : services) {
+			if (path.size() == 1 && ignoreRoot) {
+				continue;
+			}
 			std::string servicePathAsString = "";
 			bool first = true;
 			for (std::string& s : path) {
@@ -146,7 +149,7 @@ void listServices(CarWashStation* carWash) {
 void removeServiceOption(Account*& account, CarWashStation* carWash) {
 	std::cout << std::endl << "Remove service:" << std::endl;
 	std::vector<std::string> result;
-	findService(account, carWash, result);
+	findService(account, carWash, result, true);
 	bool success = carWash->RemoveService(result);
 	if (success) {
 		std::cout << "Service removed." << std::endl;
@@ -176,7 +179,7 @@ void newServiceOption(Account*& account, CarWashStation* carWash) {
 
 		if (addToExisting) {
 			std::vector<std::string> foundServicePath;
-			success = findService(account, carWash, foundServicePath);
+			success = findService(account, carWash, foundServicePath, false);
 			if (success) {
 				std::string newServiceName;
 				std::cout << "New service name: ";
@@ -201,7 +204,7 @@ void newServiceOption(Account*& account, CarWashStation* carWash) {
 void bookService(Account*& account, CarWashStation* carWash) {
 	std::cout << std::endl << "Book:" << std::endl;
 	std::vector<std::string> result;
-	findService(account, carWash, result);
+	findService(account, carWash, result, true);
 	bool success = carWash->BookService(account, result);
 	if (success) {
 		std::cout << "Service booked." << std::endl;
@@ -237,7 +240,6 @@ int main() {
 			if (dynamic_cast<Admin*>(account)) {
 				choices.AddChoice("Register account", [&account, &carWash]() {registerDialogue(account, &carWash, false); });
 				choices.AddChoice("New service option", [&account, &carWash]() {newServiceOption(account, &carWash); });
-				choices.AddChoice("List services", [&carWash]() {listServices(&carWash); });
 				choices.AddChoice("Remove service option", [&account, &carWash]() {removeServiceOption(account, &carWash); });
 			}
 			else {

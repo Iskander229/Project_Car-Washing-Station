@@ -19,8 +19,6 @@ public:
 
     //logins
     virtual bool MatchPassword(const std::string& inputPassword) const;
-    void changePassword(const std::string& newPassword);
-    virtual void displayInfo() const = 0; //pure virtual function (makes abstract)
 
     //getters
     std::string GetAccountId() const;
