@@ -93,12 +93,12 @@ Account* Account::FromLine(std::string line)
     std::string accountId;
     std::string name;
     std::string password;
-    success &= Util::readUntillComma(line, accountId);
-    success &= Util::readUntillComma(line, name);
-    success &= Util::readUntillComma(line, password);
+    success &= Util::readUntilComma(line, accountId);
+    success &= Util::readUntilComma(line, name);
+    success &= Util::readUntilComma(line, password);
 
     std::string type;
-    success &= Util::readUntillComma(line, type);
+    success &= Util::readUntilComma(line, type);
 
     if (!success) {
         return nullptr;
@@ -119,6 +119,7 @@ Account* Account::FromLine(std::string line)
 
     if (!success) {
         delete out;
+        return nullptr;
     }
     else {
         return out;

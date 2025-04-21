@@ -27,6 +27,7 @@ public:
     static bool IsValidUsername(std::string& username, std::string& errorMessage);
     static bool IsValidPassword(std::string& password, std::string& errorMessage);
 
+
     static Account* FromLine(std::string line);
     static std::string ToLine(Account* account);
 };

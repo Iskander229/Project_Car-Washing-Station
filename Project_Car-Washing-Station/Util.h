@@ -2,13 +2,16 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <iomanip>
+
 class Util
 {
 public:
 
-	static bool readUntillComma(std::string& buf, std::string& result) {
+	static bool readUntilComma(std::string& buf, std::string& result) {
 		result = "";
-		for (int i = 0; i < buf.size(); i++) {
+		for (size_t i = 0; i < buf.size(); i++) {
 			if (buf[i] == ',') {
 				result = buf.substr(0, i);
 				buf = buf.substr(i + 1, buf.size() - i - 1);
@@ -18,8 +21,29 @@ public:
 		return false;
 	}
 
+	static bool readUntilComma(std::string& buf, float& result) {
+		for (size_t i = 0; i < buf.size(); i++) {
+			if (buf[i] == ',') {
+				std::string valueStr = buf.substr(0, i);
+				try {
+					result = std::stof(valueStr);
+					buf = buf.substr(i + 1);
+					return true;
+				}
+				catch (std::invalid_argument) {
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+
 	static void writeWithComma(std::string& buf, std::string& append) {
 		buf = buf + (append + ",");
+	}
+
+	static void writeWithComma(std::string& buf, float val) {
+		buf = buf + (std::to_string(val) + ",");
 	}
 
 	static void writeManyWithComma(std::string& buf, std::vector<std::string>& append) {
@@ -33,13 +57,13 @@ public:
 
 	static bool readManyUntilComma(std::string& buf, std::vector<std::string>& result) {
 		std::string sizeStr;
-		if (!readUntillComma(buf, sizeStr)) {
+		if (!readUntilComma(buf, sizeStr)) {
 			return false;
 		}
 		int size = std::stoi(sizeStr);
 		for (int i = 0; i < size; i++) {
 			std::string s;
-			if (!readUntillComma(buf, s)) {
+			if (!readUntilComma(buf, s)) {
 				return false;
 			}
 			result.push_back(s);
@@ -69,5 +93,27 @@ public:
 		}
 		return false;
 	}
+
+	static std::string FormatPrice(float price) {
+		std::ostringstream stream;
+		stream << std::fixed << std::setprecision(2) << price;
+		return stream.str();
+	}
+
+	static std::string StackServicePath(std::vector<std::string>& path) {
+		std::string servicePathAsString = "";
+		bool first = true;
+		for (std::string& s : path) {
+			if (!first) {
+				servicePathAsString = servicePathAsString + " > " + s;
+			}
+			else {
+				servicePathAsString = servicePathAsString + s;
+				first = false;
+			}
+		}
+		return servicePathAsString;
+	}
+
 };
 

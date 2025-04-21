@@ -8,7 +8,9 @@
 #include "Booking.h"
 #include "Service.h"
 
+
 class Account;
+class User;
 
 class CarWashStation {
 private:
@@ -23,6 +25,12 @@ private:
     void loadAccounts();
     void saveAccounts();
 
+    void loadServices();
+    void saveServices();
+
+    float revenue;
+
+
 public:
     CarWashStation() {}
 
@@ -32,8 +40,12 @@ public:
     bool AddRootService(std::string& name);
     bool AddService(std::vector<std::string>& path, std::string& name);
     bool RemoveService(std::vector<std::string>& path);
-    bool BookService(Account* account, std::vector<std::string>& path);
-    
+    bool BookService(User* account, std::vector<std::string>& path);
+    float GetServicePrice(std::vector<std::string>& path);
+    bool SetServicePrice(std::vector<std::string>& path, float price);
+    void GetUsersAsVector(std::vector<User*>& out);
+    bool ValidateService(std::vector<std::string>& path);
+    bool ApproveOneService(User* user);
 
     void LoadData();
 
@@ -41,8 +53,6 @@ public:
     size_t getTotalBookings() const {
         return confirmedBookings.size();
     }
-
-    void displayAllServices() const;
 
     Account* FindAccountByName(std::string name);
     Account* FindAccountById(std::string name);

@@ -15,7 +15,7 @@ User::User(const std::string& id, const std::string& name, const std::string& pa
 bool User::fromLine(std::string line)
 {
     std::string sizeStr;
-    if (!Util::readUntillComma(line, sizeStr)) {
+    if (!Util::readUntilComma(line, sizeStr)) {
         return false;
     }
     int size = std::stoi(sizeStr);
@@ -39,6 +39,7 @@ bool User::toLine(std::string& line)
     Util::writeWithComma(line, sizeStr);
     for (int i = 0; i < size; i++) {
         Util::writeManyWithComma(line, bookedServicesCopy.front());
+        bookedServicesCopy.pop();
     }
     return true;
 }

@@ -17,8 +17,27 @@ private:
 public:
     User(const std::string& id, const std::string& name, const std::string& password);
 
+    void AddServiceToQueue(std::vector<std::string>& path) {
+        bookedServices.push(path);
+    }
 
+    bool HasPendingService() {
+        return !bookedServices.empty();
+    }
 
+    std::vector<std::string> GetPendingService() {
+        return bookedServices.front();
+    }
+
+    bool PopPendingService() {
+        if (bookedServices.size() > 0) {
+            bookedServices.pop();
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     virtual bool fromLine(std::string line) override;
     virtual bool toLine(std::string& line) override;

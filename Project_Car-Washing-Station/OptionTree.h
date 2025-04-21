@@ -75,6 +75,25 @@ public:
 		}
 	}
 
+	bool checkOption(const std::vector<std::string>& nodePath) {
+		OptionTreeNode* node = getNode(nodePath);
+		return node != nullptr;
+	}
+
+	float GetOptionPrice(const std::vector<std::string>& nodePath) {
+		OptionTreeNode* node = getNode(nodePath);
+		return node == nullptr ? 0 : node->price;
+	}
+
+	bool SetOptionPrice(const std::vector<std::string>& nodePath, float price) {
+		OptionTreeNode* node = getNode(nodePath);
+		if (node) {
+			node->price = price;
+			return true;
+		}
+		return false;
+	}
+
 	bool AddOption(const std::vector<std::string>& nodePath, const std::string& option) {
 		OptionTreeNode* node = getNode(nodePath);
 		if (node == nullptr) {

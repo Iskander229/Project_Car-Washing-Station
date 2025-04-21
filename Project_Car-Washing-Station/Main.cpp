@@ -5,6 +5,7 @@
 #include "Service.h"
 #include "Booking.h"
 #include "CarWashStation.h"
+#include <iomanip>
 #include "ChoiceForm.h"
 
 void login(Account*& account, CarWashStation* carWash) {
@@ -29,7 +30,7 @@ void login(Account*& account, CarWashStation* carWash) {
 }
 
 
-void registerDialogue(Account*& account, CarWashStation* carWash, bool setupMode) {
+void registerDialogue(Account* account, CarWashStation* carWash, bool setupMode) {
 	std::cout << "Sign up" << std::endl;
 
 	std::string username;
@@ -75,7 +76,7 @@ void registerDialogue(Account*& account, CarWashStation* carWash, bool setupMode
 	}
 }
 
-bool findService(Account*& account, CarWashStation* carWash, std::vector<std::string>& foundService, bool ignoreRoot) {
+bool findService(Account* account, CarWashStation* carWash, std::vector<std::string>& foundService, bool ignoreRoot) {
 	std::cout << "Find service:" << std::endl;
 	std::cout << "    Enter service name: ";
 	std::string findName;
@@ -84,52 +85,60 @@ bool findService(Account*& account, CarWashStation* carWash, std::vector<std::st
 	std::vector<std::vector<std::string>> services;
 	carWash->FindServiceOptions(findName, services);
 
-	if (services.size() == 0 || services.size() == 1 && ignoreRoot) {
-		std::cout << "No services found." << std::endl;
+	if (ignoreRoot) {
+		for (int i = 0; i < services.size(); i++) {
+			if (services[i].size() == 1) {
+				services.erase(services.begin() + i);
+				break;
+			}
+		}
+	}
+
+	bool cancel = false;
+
+	ChoiceForm choices = ChoiceForm("Found " + std::to_string(services.size()) + " services:");
+	for (std::vector<std::string>& path : services) {
+		if (path.size() == 1 && ignoreRoot) {
+			continue;
+		}
+		std::string servicePathAsString = Util::StackServicePath(path);
+
+		float price = carWash->GetServicePrice(path);
+		servicePathAsString = servicePathAsString + " (" + Util::FormatPrice(price) + "$)";
+
+		choices.AddChoice(servicePathAsString, [&foundService, path]() {foundService = path; });
+	}
+	choices.AddChoice("Cancel", [&cancel]() {cancel = true; });
+	choices.AskUser();
+	if (cancel) {
+		std::cout << "Operation canceled." << std::endl;
 		return false;
 	}
 	else {
-
-		bool cancel = false;
-
-		ChoiceForm choices = ChoiceForm("Found " + std::to_string(services.size()) + " services:");
-		for (std::vector<std::string>& path : services) {
-			if (path.size() == 1 && ignoreRoot) {
-				continue;
-			}
-			std::string servicePathAsString = "";
-			bool first = true;
-			for (std::string& s : path) {
-				if (!first) {
-					servicePathAsString = servicePathAsString + " > " + s;
-				}
-				else {
-					servicePathAsString = servicePathAsString + s;
-					first = false;
-				}
-			}
-			choices.AddChoice(servicePathAsString, [&foundService, path]() {foundService = path; });
-		}
-		choices.AddChoice("Cancel", [&cancel]() {cancel = true; });
-		choices.AskUser();
-		if (cancel) {
-			std::cout << "Operation canceled." << std::endl;
-			return false;
-		}
-		else {
-			return true;
-		}
+		return true;
 	}
 
 }
 
-void listServices(CarWashStation* carWash) {
+void listServices(CarWashStation* carWash, bool ignoreRoot) {
 	std::vector<std::vector<std::string>> services;
 	std::string query = "";
 	carWash->FindServiceOptions(query, services);
 
+	if (ignoreRoot) {
+		for (int i = 0; i < services.size(); i++) {
+			if (services[i].size() == 1) {
+				services.erase(services.begin() + i);
+				break;
+			}
+		}
+	}
+
 	std::cout << std::endl << "Found " << services.size() << " services: " << std::endl;
 
+
+
+	int i = 0;
 	for (std::vector<std::string>& path : services) {
 		std::string servicePathAsString = "";
 		bool first = true;
@@ -142,11 +151,13 @@ void listServices(CarWashStation* carWash) {
 				first = false;
 			}
 		}
-		std::cout << "    " << servicePathAsString << std::endl;
+
+		float price = carWash->GetServicePrice(path);
+		std::cout << "    " << ++i << ". " << servicePathAsString << " (" << Util::FormatPrice(price) << "$)" << std::endl;
 	}
 }
 
-void removeServiceOption(Account*& account, CarWashStation* carWash) {
+void removeServiceOption(Account* account, CarWashStation* carWash) {
 	std::cout << std::endl << "Remove service:" << std::endl;
 	std::vector<std::string> result;
 	findService(account, carWash, result, true);
@@ -159,7 +170,80 @@ void removeServiceOption(Account*& account, CarWashStation* carWash) {
 	}
 }
 
-void newServiceOption(Account*& account, CarWashStation* carWash) {
+void approveServiceDone(Account* account, CarWashStation* carWash) {
+	std::cout << std::endl << "Active booked services:" << std::endl;
+	
+	ChoiceForm choice("Mark service as done:");
+
+	std::vector<User*> allUsers;
+	carWash->GetUsersAsVector(allUsers);
+	User* chosenUser = nullptr;
+	int pendingUsers = 0;
+	for (User* user : allUsers) {
+		if (user->HasPendingService()) {
+			std::vector<std::string> service = user->GetPendingService();
+			bool success = carWash->ValidateService(service);
+			std::string lastBlock;
+			if (success) {
+				float price = carWash->GetServicePrice(service);
+				lastBlock = "Price: " + Util::FormatPrice(price) + "$";
+			}
+			else {
+				lastBlock = "Error: options does not exist anymore. Choose to skip.";
+			}
+			choice.AddChoice(
+				"User '" + user->GetName() +
+				"', " + Util::StackServicePath(service) +
+				", " + lastBlock,
+				[&chosenUser, user]() {chosenUser = user; });
+			pendingUsers += 1;
+		}
+	}
+	choice.AddChoice("Cancel", []() {});
+
+	if (pendingUsers == 0) {
+		std::cout << "There is no booked services pending." << std::endl;
+		return;
+	}
+	
+	choice.AskUser();
+
+	if (chosenUser == nullptr) {
+		std::cout << "Operation canceled." << std::endl;
+	}
+	else {
+		std::vector<std::string> service = chosenUser->GetPendingService();
+		bool success = carWash->ApproveOneService(chosenUser);
+		if (success) {
+			std::cout << "Service approved." << std::endl;
+		}
+		else {
+			// Should never happen since the existence of the sevice was checked before
+			std::cout << "Operation failed." << std::endl;
+
+		}
+	}
+
+
+	
+}
+
+float getFloatInput() {
+	while (true) {
+		std::string s;
+		std::getline(std::cin, s);
+		try {
+			float result = std::stof(s);
+			return result;
+		}
+		catch (std::invalid_argument) {
+			std::cout << "Invalid input." << std::endl;
+		}
+	}
+
+}
+
+void newServiceOption(Account* account, CarWashStation* carWash) {
 	bool cancel = false;
 
 	while (true) {
@@ -184,7 +268,13 @@ void newServiceOption(Account*& account, CarWashStation* carWash) {
 				std::string newServiceName;
 				std::cout << "New service name: ";
 				std::getline(std::cin, newServiceName);
+				std::cout << "Enter price: ";
+				float price = getFloatInput();
 				success = carWash->AddService(foundServicePath, newServiceName);
+				if (success) {
+					foundServicePath.push_back(newServiceName);
+					carWash->SetServicePrice(foundServicePath, price);
+				}
 			}
 		}
 		else {
@@ -201,11 +291,15 @@ void newServiceOption(Account*& account, CarWashStation* carWash) {
 	}
 }
 
-void bookService(Account*& account, CarWashStation* carWash) {
+void bookService(User* user, CarWashStation* carWash) {
+	if (user == nullptr) {
+		std::cout << std::endl << "Operation failed." << std::endl;
+		return;
+	}
 	std::cout << std::endl << "Book:" << std::endl;
 	std::vector<std::string> result;
-	findService(account, carWash, result, true);
-	bool success = carWash->BookService(account, result);
+	findService(user, carWash, result, true);
+	bool success = carWash->BookService(user, result);
 	if (success) {
 		std::cout << "Service booked." << std::endl;
 	}
@@ -236,14 +330,15 @@ int main() {
 		}
 		else {
 			choices.AddChoice("Log out", [&account]() {account = nullptr; });
-			choices.AddChoice("List services", [&carWash]() {listServices(&carWash); });
+			choices.AddChoice("List services", [&carWash, account]() {listServices(&carWash, dynamic_cast<Admin*>(account) == nullptr); });
 			if (dynamic_cast<Admin*>(account)) {
 				choices.AddChoice("Register account", [&account, &carWash]() {registerDialogue(account, &carWash, false); });
 				choices.AddChoice("New service option", [&account, &carWash]() {newServiceOption(account, &carWash); });
 				choices.AddChoice("Remove service option", [&account, &carWash]() {removeServiceOption(account, &carWash); });
+				choices.AddChoice("Approve service done", [&account, &carWash]() {approveServiceDone(account, &carWash); });
 			}
 			else {
-				choices.AddChoice("Book service", [&account, &carWash]() {bookService(account, &carWash); });
+				choices.AddChoice("Book service", [account, &carWash]() {bookService(dynamic_cast<User*>(account), &carWash); });
 
 			}
 
