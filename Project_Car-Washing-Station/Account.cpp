@@ -54,7 +54,7 @@ bool Account::IsValidUsername(std::string& username, std::string& errorMessage)
 
 bool Account::IsValidPassword(std::string& password, std::string& errorMessage)
 {
-    static const char* passwordAllowedSymbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-";
+    static const char* passwordAllowedSymbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-0123456789";
     static const size_t passwordAllowedSymbolsNum = strlen(passwordAllowedSymbols);
     if (password.size() < 4) {
         errorMessage = "Password too short.";

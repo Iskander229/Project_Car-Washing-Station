@@ -124,10 +124,38 @@ void CarWashStation::saveServices()
 	servicesFile.close();
 }
 
+void CarWashStation::loadRevenue()
+{
+	std::ifstream file("revenue.txt");
+
+	if (!file) {
+		std::cout << "Cannot load revenue." << std::endl;
+		return;
+	}
+	try {
+		file >> revenue;
+	}
+	catch (...) {
+		std::cout << "Cannot load revenue." << std::endl;
+	}
+}
+
+void CarWashStation::saveRevenue()
+{
+	std::ofstream file("revenue.txt");
+
+	if (!file) {
+		std::cout << "Cannot write to revenue database" << std::endl;
+		return;
+	}
+	file << revenue;
+}
+
 void CarWashStation::SaveData()
 {
 	saveAccounts();
 	saveServices();
+	saveRevenue();
 }
 
 void CarWashStation::FindServiceOptions(std::string& query, std::vector<std::vector<std::string>>& results)
@@ -135,14 +163,26 @@ void CarWashStation::FindServiceOptions(std::string& query, std::vector<std::vec
 	serviceOptions.FindAll(query, results);
 }
 
-bool CarWashStation::AddRootService(std::string& name)
+bool CarWashStation::AddService(std::vector<std::string>& path, std::string& name, float price)
 {
-	return serviceOptions.AddOption(name);
-}
+	if (price < 0) {
+		return false;
+	}
 
-bool CarWashStation::AddService(std::vector<std::string>& path, std::string& name)
-{
-	return serviceOptions.AddOption(path, name);
+	std::string name1 = "";
+	for (unsigned char s : name) {
+		if (s != ',') {
+			name1 += s;
+		}
+	}
+
+	bool success = serviceOptions.AddOption(path, name1);
+	if (success) {
+		path.push_back(name);
+		success = SetServicePrice(path, price);
+		path.pop_back();
+	}
+	return success;
 }
 
 bool CarWashStation::RemoveService(std::vector<std::string>& path)
@@ -165,6 +205,9 @@ float CarWashStation::GetServicePrice(std::vector<std::string>& path)
 }
 bool CarWashStation::SetServicePrice(std::vector<std::string>& path, float price)
 {
+	if (price < 0) {
+		return false;
+	}
 	return serviceOptions.SetOptionPrice(path, price);
 }
 
@@ -198,10 +241,16 @@ bool CarWashStation::ApproveOneService(User* user)
 	}
 }
 
+float CarWashStation::GetRevenue()
+{
+	return revenue;
+}
+
 void CarWashStation::LoadData()
 {
 	loadAccounts();
 	loadServices();
+	loadRevenue();
 }
 
 Account* CarWashStation::FindAccountByName(std::string name)

@@ -29,7 +29,10 @@ private:
     void loadServices();
     void saveServices();
 
-    float revenue;
+    void loadRevenue();
+    void saveRevenue();
+
+    float revenue = 0;
 
 
 public:
@@ -39,7 +42,7 @@ public:
 
     void FindServiceOptions(std::string& query, std::vector<std::vector<std::string>>& results);
     bool AddRootService(std::string& name);
-    bool AddService(std::vector<std::string>& path, std::string& name);
+    bool AddService(std::vector<std::string>& path, std::string& name, float price);
     bool RemoveService(std::vector<std::string>& path);
     bool BookService(User* account, std::vector<std::string>& path);
     float GetServicePrice(std::vector<std::string>& path);
@@ -47,8 +50,10 @@ public:
     void GetUsersAsVector(std::vector<User*>& out);
     bool ValidateService(std::vector<std::string>& path);
     bool ApproveOneService(User* user);
-
+    float GetRevenue();
+    
     void LoadData();
+
 
 
     size_t getTotalBookings() const {

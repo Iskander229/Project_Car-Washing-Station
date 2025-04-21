@@ -172,7 +172,7 @@ void removeServiceOption(Account* account, CarWashStation* carWash) {
 
 void approveServiceDone(Account* account, CarWashStation* carWash) {
 	std::cout << std::endl << "Active booked services:" << std::endl;
-	
+
 	ChoiceForm choice("Mark service as done:");
 
 	std::vector<User*> allUsers;
@@ -205,7 +205,7 @@ void approveServiceDone(Account* account, CarWashStation* carWash) {
 		std::cout << "There is no booked services pending." << std::endl;
 		return;
 	}
-	
+
 	choice.AskUser();
 
 	if (chosenUser == nullptr) {
@@ -215,7 +215,7 @@ void approveServiceDone(Account* account, CarWashStation* carWash) {
 		std::vector<std::string> service = chosenUser->GetPendingService();
 		bool success = carWash->ApproveOneService(chosenUser);
 		if (success) {
-			std::cout << "Service approved." << std::endl;
+			std::cout << "Service approved. Total revenue: " << carWash->GetRevenue() << "$" << std::endl;
 		}
 		else {
 			// Should never happen since the existence of the sevice was checked before
@@ -225,7 +225,11 @@ void approveServiceDone(Account* account, CarWashStation* carWash) {
 	}
 
 
-	
+
+}
+
+void seeRevenue(Account* account, CarWashStation* carWash) {
+	std::cout << "Carwash revenue:\n    " << carWash->GetRevenue() << "$" << std::endl;
 }
 
 float getFloatInput() {
@@ -247,12 +251,6 @@ void newServiceOption(Account* account, CarWashStation* carWash) {
 	bool cancel = false;
 
 	while (true) {
-		bool addToExisting = false;
-		ChoiceForm choices("Add service: ");
-		choices.AddChoice("Add option to existing service", [&addToExisting]() {addToExisting = true; });
-		choices.AddChoice("Add new service", [&addToExisting]() {addToExisting = false; });
-		choices.AddChoice("Cancel", [&cancel]() {cancel = true; });
-		choices.AskUser();
 
 		if (cancel) {
 			std::cout << "Operation canceled." << std::endl;
@@ -261,27 +259,22 @@ void newServiceOption(Account* account, CarWashStation* carWash) {
 
 		bool success = false;
 
-		if (addToExisting) {
-			std::vector<std::string> foundServicePath;
-			success = findService(account, carWash, foundServicePath, false);
-			if (success) {
-				std::string newServiceName;
-				std::cout << "New service name: ";
-				std::getline(std::cin, newServiceName);
-				std::cout << "Enter price: ";
-				float price = getFloatInput();
-				success = carWash->AddService(foundServicePath, newServiceName);
-				if (success) {
-					foundServicePath.push_back(newServiceName);
-					carWash->SetServicePrice(foundServicePath, price);
-				}
-			}
-		}
-		else {
+		std::vector<std::string> foundServicePath;
+		success = findService(account, carWash, foundServicePath, false);
+		if (success) {
 			std::string newServiceName;
 			std::cout << "New service name: ";
 			std::getline(std::cin, newServiceName);
-			success = carWash->AddRootService(newServiceName);
+			std::cout << "Enter price: ";
+			float price = getFloatInput();
+			success = carWash->AddService(foundServicePath, newServiceName, price);
+			if (success) {
+				foundServicePath.push_back(newServiceName);
+				carWash->SetServicePrice(foundServicePath, price);
+			}
+			else {
+				std::cout << "Invalid name / price." << std::endl;
+			}
 		}
 
 		if (success) {
@@ -329,20 +322,19 @@ int main() {
 			choices.AddChoice("Register", [&account, &carWash]() {registerDialogue(account, &carWash, false); });
 		}
 		else {
-			choices.AddChoice("Log out", [&account]() {account = nullptr; });
-			choices.AddChoice("List services", [&carWash, account]() {listServices(&carWash, dynamic_cast<Admin*>(account) == nullptr); });
 			if (dynamic_cast<Admin*>(account)) {
-				choices.AddChoice("Register account", [&account, &carWash]() {registerDialogue(account, &carWash, false); });
 				choices.AddChoice("New service option", [&account, &carWash]() {newServiceOption(account, &carWash); });
 				choices.AddChoice("Remove service option", [&account, &carWash]() {removeServiceOption(account, &carWash); });
 				choices.AddChoice("Approve service done", [&account, &carWash]() {approveServiceDone(account, &carWash); });
+				choices.AddChoice("Show revenue", [&account, &carWash]() {seeRevenue(account, &carWash); });
+				choices.AddChoice("Register account", [&account, &carWash]() {registerDialogue(account, &carWash, false); });
 			}
 			else {
 				choices.AddChoice("Book service", [account, &carWash]() {bookService(dynamic_cast<User*>(account), &carWash); });
 
 			}
-
-
+			choices.AddChoice("List services", [&carWash, account]() {listServices(&carWash, dynamic_cast<Admin*>(account) == nullptr); });
+			choices.AddChoice("Log out", [&account]() {account = nullptr; });
 		}
 		choices.AskUser();
 		carWash.SaveData();

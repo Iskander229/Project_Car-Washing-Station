@@ -1,3 +1,0 @@
-Alex0,Alex,Alex,admin,
-user0,user,user,user,0,
-Aaaa0,Aaaa,Aaaa,user,0,
