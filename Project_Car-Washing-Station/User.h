@@ -4,23 +4,43 @@
 #include "Account.h"
 #include "Booking.h"
 #include <vector>
+#include <queue>
 #include "Service.h"
 
-template <typename T> //just a forward declaration
-class CarWashStation;
-
 class User : public Account {
+
 private:
-    std::vector<Booking> bookingHistory;
+
+    // Queue of paths
+    std::queue<std::vector<std::string>> bookedServices;
 
 public:
     User(const std::string& id, const std::string& name, const std::string& password);
-    void registerUser();
-    void displayInfo() const override;
-    void viewServices(const CarWashStation<Service>& carWash) const;
-    void bookService(CarWashStation<Service>& carWash);
-    void viewBookingHistory() const;
-    void addBooking(const Booking& booking);
+
+    void AddServiceToQueue(std::vector<std::string>& path) {
+        bookedServices.push(path);
+    }
+
+    bool HasPendingService() {
+        return !bookedServices.empty();
+    }
+
+    std::vector<std::string> GetPendingService() {
+        return bookedServices.front();
+    }
+
+    bool PopPendingService() {
+        if (bookedServices.size() > 0) {
+            bookedServices.pop();
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    virtual bool fromLine(std::string line) override;
+    virtual bool toLine(std::string& line) override;
 };
 
 #endif

@@ -2,8 +2,6 @@
 #define ADMIN_H
 
 #include "Account.h"
-#include "CarWashStation.h"
-#include "Service.h"
 
 class Admin : public Account {
 private:
@@ -11,16 +9,10 @@ private:
 
 public:
     //constr
-    Admin(const std::string& id, const std::string& name);
+    Admin(const std::string& id, const std::string& name, const std::string& password);
     
-    //logins
-    bool login(const std::string& inputPassword) const override;
-    void displayInfo() const override;
-
-    //services
-    void addService(CarWashStation<Service>& carWash);
-    void removeService(CarWashStation<Service>& carWash);
-    void viewSalesReport(const CarWashStation<Service>& carWash) const;
+    virtual bool fromLine(std::string line) override;
+    virtual bool toLine(std::string& line) override;
 };
 
 #endif

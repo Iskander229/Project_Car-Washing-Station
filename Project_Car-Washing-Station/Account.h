@@ -5,9 +5,12 @@
 //base class (inheritance)
 class Account {
 protected:
-    std::string accountID;
+    std::string accountId;
     std::string name;
     std::string password;
+
+    virtual bool fromLine(std::string line) = 0;
+    virtual bool toLine(std::string& line) = 0;
 
 public:
     //constr
@@ -15,13 +18,18 @@ public:
     virtual ~Account() {};
 
     //logins
-    virtual bool login(const std::string& inputPassword) const;
-    void changePassword(const std::string& newPassword);
-    virtual void displayInfo() const = 0; //pure virtual function (makes abstract)
+    virtual bool MatchPassword(const std::string& inputPassword) const;
 
     //getters
-    std::string getAccountID() const;
-    std::string getName() const;
+    std::string GetAccountId() const;
+    std::string GetName() const;
+
+    static bool IsValidUsername(std::string& username, std::string& errorMessage);
+    static bool IsValidPassword(std::string& password, std::string& errorMessage);
+
+
+    static Account* FromLine(std::string line);
+    static std::string ToLine(Account* account);
 };
 
 #endif

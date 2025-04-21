@@ -1,46 +1,47 @@
+
+
 #include "User.h"
 #include "CarWashStation.h"
 #include "Service.h"
+#include "Util.h"
 #include <iostream>
 
+
 User::User(const std::string& id, const std::string& name, const std::string& password)
-    : Account(id, name, password) {}
+    : Account(id, name, password)
+{
 
-//logins
-void User::registerUser() {
-    std::cout << "User " << name << " registered with ID: " << accountID << std::endl;
-}
-void User::displayInfo() const {
-    std::cout << "User ID: " << accountID << "\nName: " << name << std::endl;
 }
 
-//services
-void User::viewServices(const CarWashStation<Service>& carWash) const {
-    carWash.displayAllServices();
-}
 
-void User::bookService(CarWashStation<Service>& carWash) {
-    std::string serviceID;
-
-    std::cout << "Enter the service ID you want to book: ";
-    std::cin >> serviceID;
-
-    Booking newBooking(accountID, serviceID); 
-    carWash.processBooking(newBooking);
-    addBooking(newBooking);
-
-    std::cout << "Service booked successfully!\n";
-}
-
-void User::viewBookingHistory() const {
-    int i = 0;
-    std::cout << "Booking History for User: " << name << "\n";
-    for (const auto& booking : bookingHistory) {
-        std::cout <<"Service ID #" <<  ++i <<": " << booking.getBookingID() << "\n";
+bool User::fromLine(std::string line)
+{
+    std::string sizeStr;
+    if (!Util::readUntilComma(line, sizeStr)) {
+        return false;
     }
+    int size = std::stoi(sizeStr);
+    bookedServices = std::queue<std::vector<std::string>>();
+
+    for (int i = 0; i < size; i++) {
+        std::vector<std::string> service;
+        if (!Util::readManyUntilComma(line, service)) {
+            return false;
+        }
+        bookedServices.push(service);
+    }
+    return true;
 }
 
-//pushes the booking
-void User::addBooking(const Booking& booking) {
-    bookingHistory.push_back(booking);
+bool User::toLine(std::string& line)
+{
+    std::queue<std::vector<std::string>> bookedServicesCopy = bookedServices;
+    size_t size = bookedServicesCopy.size();
+    std::string sizeStr = std::to_string(size);
+    Util::writeWithComma(line, sizeStr);
+    for (int i = 0; i < size; i++) {
+        Util::writeManyWithComma(line, bookedServicesCopy.front());
+        bookedServicesCopy.pop();
+    }
+    return true;
 }
