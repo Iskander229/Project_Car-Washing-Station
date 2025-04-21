@@ -8,13 +8,9 @@
 class Util
 {
 public:
-<<<<<<< HEAD
 
-	static bool readUntilComma(std::string& buf, std::string& result) {
-=======
 	//Reads a substring from buf until a comma is encountered
-	static bool readUntillComma(std::string& buf, std::string& result) {
->>>>>>> 38d83c4ea97919326440d315b2ae9ed6ed2c55b0
+	static bool readUntilComma(std::string& buf, std::string& result) {
 		result = "";
 		for (size_t i = 0; i < buf.size(); i++) {
 			if (buf[i] == ',') {
@@ -26,7 +22,6 @@ public:
 		return false; //if no comma found
 	}
 
-<<<<<<< HEAD
 	static bool readUntilComma(std::string& buf, float& result) {
 		for (size_t i = 0; i < buf.size(); i++) {
 			if (buf[i] == ',') {
@@ -44,23 +39,18 @@ public:
 		return false;
 	}
 
-=======
 
 	//Adds a string to buf followed by a comma
->>>>>>> 38d83c4ea97919326440d315b2ae9ed6ed2c55b0
 	static void writeWithComma(std::string& buf, std::string& append) {
 		buf = buf + (append + ",");
 	}
 
-<<<<<<< HEAD
 	static void writeWithComma(std::string& buf, float val) {
 		buf = buf + (std::to_string(val) + ",");
 	}
 
-=======
 
 	//Serializes a vector of strings into buf
->>>>>>> 38d83c4ea97919326440d315b2ae9ed6ed2c55b0
 	static void writeManyWithComma(std::string& buf, std::vector<std::string>& append) {
 		size_t size = append.size();
 		std::string sizeStr = std::to_string(size);
